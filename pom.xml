@@ -1,11 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <!--    <parent>-->
-    <!--        <groupId>org.sonatype.oss</groupId>-->
-    <!--        <artifactId>oss-parent</artifactId>-->
-    <!--        <version>7</version>-->
-    <!--    </parent>-->
+
     <groupId>com.huaban</groupId>
     <artifactId>jieba-analysis</artifactId>
     <version>1.0.3-SNAPSHOT</version>
@@ -14,6 +10,7 @@
     <name>结巴分词工具(jieba for java)</name>
     <url>http://maven.apache.org</url>
     <inceptionYear>2013</inceptionYear>
+
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
@@ -22,28 +19,11 @@
         </license>
     </licenses>
 
-    <scm>
-        <connection>scm:git:git@github.com:huaban/jieba-analysis.git</connection>
-        <developerConnection>scm:git:git@github.com:huaban/jieba-analysis.git</developerConnection>
-        <url>git@github.com:huaban/jieba-analysis.git</url>
-    </scm>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.target>1.7</maven.compiler.target>
+        <site.path>snapshot</site.path>
     </properties>
-
-    <developers>
-        <developer>
-            <id>libin</id>
-            <name>libin</name>
-            <email>piaolingxue305@gmail.com</email>
-        </developer>
-        <developer>
-            <id>tokikanno</id>
-            <name>tokikanno</name>
-        </developer>
-    </developers>
 
     <dependencies>
         <dependency>
@@ -60,158 +40,51 @@
     </dependencies>
 
     <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>2.3.2</version>
-                    <configuration>
-                        <source>1.7</source>
-                        <target>1.7</target>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-gpg-plugin</artifactId>
-                    <version>1.4</version>
-                    <executions>
-                        <execution>
-                            <id>sign-artifacts</id>
-                            <phase>verify</phase>
-                            <goals>
-                                <goal>sign</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <keyname>Libin &lt;bin.li@upai.com&gt;</keyname>
-                    </configuration>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>2.1.2</version>
-                    <executions>
-                        <execution>
-                            <id>attach-sources</id>
-                            <phase>package</phase>
-                            <goals>
-                                <goal>jar</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.9.1</version>
-                    <configuration>
-                        <encoding>UTF-8</encoding>
-                        <docencoding>UTF-8</docencoding>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>attach-javadocs</id>
-                            <goals>
-                                <goal>jar</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>de.thetaphi</groupId>
-                    <artifactId>forbiddenapis</artifactId>
-                    <version>1.8</version>
-                    <configuration>
-                        <!-- disallow undocumented classes like sun.misc.Unsafe: -->
-                        <internalRuntimeForbidden>true</internalRuntimeForbidden>
-                        <!--
-                          if the used Java version is too new,
-                          don't fail, just do nothing:
-                        -->
-                        <failOnUnsupportedJava>false</failOnUnsupportedJava>
-                        <bundledSignatures>
-                            <!--
-                              This will automatically choose the right
-                              signatures based on 'maven.compiler.target':
-                            -->
-                            <bundledSignature>jdk-unsafe</bundledSignature>
-                            <bundledSignature>jdk-deprecated</bundledSignature>
-                        </bundledSignatures>
-                        <!--
-                        <signaturesFiles>
-                          <signaturesFile>./rel/path/to/signatures.txt</signaturesFile>
-                        </signaturesFiles>
-                        -->
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>check</goal>
-                                <goal>testCheck</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-            </plugins>
-        </pluginManagement>
+        <plugins>
+            <plugin>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.2.1</version>
+                <configuration>
+                    <useReleaseProfile>true</useReleaseProfile>
+                    <goals>deploy site site-deploy</goals>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.1</version>
+                <configuration>
+                    <altDeploymentRepository>internal.repo::default::file://${user.dir}/target/mvn-repo
+                    </altDeploymentRepository>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.github.github</groupId>
+                <artifactId>site-maven-plugin</artifactId>
+                <version>0.12</version>
+                <configuration>
+                    <message>Maven artifacts for ${project.artifactId}-${project.version}</message>
+                    <noJekyll>true</noJekyll>
+                    <merge>true</merge>
+                    <outputDirectory>${user.dir}/target/mvn-repo</outputDirectory>
+                    <path>${site.path}</path>
+                    <merge>true</merge>
+                    <branch>refs/heads/mvn-repo</branch>
+                    <includes>
+                        <include>**/*</include>
+                    </includes>
+                    <repositoryName>mvn-repo</repositoryName>
+                    <repositoryOwner>funchs</repositoryOwner>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>site</goal>
+                        </goals>
+                        <phase>deploy</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
 
-
-    <profiles>
-        <profile>
-            <id>release-sign-artifacts</id>
-            <activation>
-                <property>
-                    <name>performRelease</name>
-                    <value>true</value>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <keyname>Libin &lt;bin.li@upai.com&gt;</keyname>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-
-    <repositories>
-        <repository>
-            <id>io.cloudrepo</id>
-            <url>https://funchs.mycloudrepo.io/repositories/mvn-repo</url>
-            <releases/>
-        </repository>
-    </repositories>
-    <distributionManagement>
-        <repository>
-            <id>io.cloudrepo</id>
-            <name>My First Cloud Repo Repository</name>
-            <url>https://funchs.mycloudrepo.io/repositories/mvn-repo</url>
-        </repository>
-    </distributionManagement>
-
-    <!--    <distributionManagement>-->
-    <!--        <repository>-->
-    <!--            <id>sonatype-nexus-staging</id>-->
-    <!--            <name>Nexus Staging Repository</name>-->
-    <!--            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>-->
-    <!--        </repository>-->
-    <!--    </distributionManagement>-->
 </project>
